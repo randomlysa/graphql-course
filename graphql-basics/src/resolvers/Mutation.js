@@ -180,7 +180,12 @@ const Mutation = {
     }
 
     db.comments.push(comment)
-    pubsub.publish(`comment ${args.data.post}`, { comment })
+    pubsub.publish(`comment ${args.data.post}`, {
+      comment: {
+        mutation: 'CREATE',
+        data: comment
+      }
+    })
     return comment
   },
   deleteComment(parent, args, { db }, info) {
