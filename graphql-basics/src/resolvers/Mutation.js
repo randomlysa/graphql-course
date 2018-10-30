@@ -92,20 +92,20 @@ const Mutation = {
       throw new Error ('Post ID not found ~')
     }
 
-    const deletedPost = db.posts.splice(postIndex, 1);
-    // posts = posts.filter(post => post.id !== args.id)
+    // Destructure the one post that was spliced.
+    const [ post ] = db.posts.splice(postIndex, 1);
     db.comments = db.comments.filter(comment => comment.post !== args.id)
 
-    if (deletedPost[0].published) {
+    if (post.published) {
       pubsub.publish('post', {
         post: {
           mutation: 'DELETED',
-          data: deletedPost[0]
+          data: post
         }
       })
     }
 
-    return deletedPost[0]
+    return post
   },
   updatePost(parent, args, { db }, info) {
     const { id, data } = args;
