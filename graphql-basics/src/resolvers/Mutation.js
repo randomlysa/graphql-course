@@ -107,15 +107,48 @@ const Mutation = {
 
     return post
   },
-  updatePost(parent, args, { db }, info) {
+  updatePost(parent, args, { db, pubsub }, info) {
     const { id, data } = args;
 
     const post = db.posts.find(post => post.id === id)
     if (!post) throw new Error('Post not found!')
+    // Make a copy of the post.
+    const originalPost = { ...post };
 
     if (typeof data.title === 'string') post.title = data.title
     if (typeof data.body === 'string') post.body = data.body
-    if (typeof data.published === 'boolean') post.published = data.published
+
+    if (typeof data.published === 'boolean') {
+      post.published = data.published
+
+      if (originalPost.published === true && !post.published) {
+        // Unpublished event.
+        pubsub.publish('post', {
+          post: {
+            mutation: 'UNPUBLISHED',
+            data: originalPost
+          }
+        })
+      } else if (!originalPost.published && post.published) {
+        // Published event.
+        pubsub.publish('post', {
+          post: {
+            mutation: 'PUBLISHED',
+            data: post
+          }
+        })
+      }
+
+    } else if (post.published) {
+      // Updated.
+      pubsub.publish('post', {
+        post: {
+          mutation: 'UPDATED',
+          data: post
+        }
+      })
+    } // else if -- typeof data.published === 'boolean'
+
     if (typeof data.author === 'string') {
       const userIdExists = db.users.find(user => user.id === data.author)
       if (!userIdExists) throw new Error('New author id not found')
