@@ -85,7 +85,7 @@ const Mutation = {
     db.posts.push(post)
     return post
   },
-  deletePost(parent, args, { db }, info) {
+  deletePost(parent, args, { db, pubsub }, info) {
     const postIndex = db.posts.findIndex(post => post.id === args.id)
 
     if (postIndex === -1) {
@@ -95,6 +95,15 @@ const Mutation = {
     const deletedPost = db.posts.splice(postIndex, 1);
     // posts = posts.filter(post => post.id !== args.id)
     db.comments = db.comments.filter(comment => comment.post !== args.id)
+
+    if (deletedPost[0].published) {
+      pubsub.publish('post', {
+        post: {
+          mutation: 'DELETED',
+          data: deletedPost[0]
+        }
+      })
+    }
 
     return deletedPost[0]
   },
