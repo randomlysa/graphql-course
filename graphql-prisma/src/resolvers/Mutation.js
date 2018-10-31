@@ -1,20 +1,17 @@
 import uuidv4 from 'uuid/v4';
 
 const Mutation = {
-  createUser(parent, args, { db }, info) {
-    const emailTaken = db.users.some(user => user.email === args.data.email)
+  // ES6 method, async goes in front.
+  async createUser(parent, args, { prisma }, info) {
+    const emailTaken = await prisma.exists.User({ email: args.data.email })
 
-    if (emailTaken) {
-      throw new Error('Email already in use.')
-    }
+    if (emailTaken) throw new Error('Email already in use.')
 
-    const user = {
-      id: uuidv4(),
-      ...args.data
-    }
+    return prisma.mutation.createUser({
+      data: args.data
+    }, info )
 
-    db.users.push(user)
-    return user
+
   },
   deleteUser(parent, args, { db }, info) {
     const userIndex = db.users.findIndex(user => user.id === args.id)
