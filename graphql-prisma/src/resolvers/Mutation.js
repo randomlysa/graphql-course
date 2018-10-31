@@ -31,30 +31,36 @@ const Mutation = {
     }, info)
   }, // updateUser
 
-  createPost(parent, args, { db, pubsub }, info) {
-    const userExists = db.users.some(user => user.id === args.data.author)
+  async createPost(parent, args, { prisma, pubsub }, info) {
+    const userExists = await prisma.exists.User({ id: args.data.author })
 
     if (!userExists) {
-      throw new Error('User doesn\'t exist.')
+      throw new Error('Cannot create post: user doesn\'t exist')
     }
 
-    const post = {
-      id: uuidv4(),
-      ...args.data
-    }
-
-    if (post.published) {
+    // Send a notification if publish was set to true.
+    if (args.data.published) {
       pubsub.publish('post', {
         post: {
           mutation: 'CREATED',
-          data: post
+          data: args.data
         }
       })
     }
 
-    db.posts.push(post)
-    return post
-  },
+    // Create and return the post.
+    return prisma.mutation.createPost({
+      data: {
+        ...args.data,
+        author: {
+          connect: {
+            id: args.data.author
+          }
+        }
+      }
+    }, info)
+  }, // createPost
+
   deletePost(parent, args, { db, pubsub }, info) {
     const postIndex = db.posts.findIndex(post => post.id === args.id)
 
