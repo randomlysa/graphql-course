@@ -10,9 +10,8 @@ const Mutation = {
     return prisma.mutation.createUser({
       data: args.data
     }, info )
+  }, // createUser
 
-
-  },
   async deleteUser(parent, args, { prisma }, info) {
     const userExists = await prisma.exists.User({ id: args.id })
 
