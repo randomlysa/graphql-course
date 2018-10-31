@@ -1,27 +1,36 @@
 const Query = {
   // ES6 method syntax.
-    users(parent, args, { db, prisma }, info) {
-      return prisma.query.users(null, info)
+    users(parent, args, { prisma }, info) {
+      const opArgs = {}
 
-      // if (args.query) {
-      //   return db.users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()))
-      // } else {
-      //   return db.users
-      // }
-    },
-    posts(parent, args, { db }, info) {
       if (args.query) {
-          return db.posts.filter(post => {
-            if (
-              post.title.toLowerCase().includes(args.query.toLowerCase()) ||
-              post.body.toLowerCase().includes(args.query.toLowerCase())
-            ) return post;
-          })
-          // posts.filter(post => post.body.toLowerCase().includes(args.query.toLowerCase()))
-      } else {
-        return db.posts
-      }
-    },
+        opArgs.where = {
+          OR : [{
+            name_contains: args.query
+            }, {
+            email_contains: args.query
+          }]
+        }
+      } // if (args.query)
+
+      return prisma.query.users(opArgs, info)
+
+    }, // Query users
+    posts(parent, args, { prisma }, info) {
+      const opArgs = {}
+
+      if (args.query) {
+        opArgs.where = {
+          OR : [{
+            title_contains: args.query
+          }, {
+            body_contains: args.query
+          }]
+        }
+      } // if (args.query)
+
+      return prisma.query.posts(opArgs, info)
+    }, // Query posts
     comments(parent, args, { db }, info) {
       return db.comments
     }
