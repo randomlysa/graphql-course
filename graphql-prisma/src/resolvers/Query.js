@@ -1,11 +1,13 @@
 const Query = {
   // ES6 method syntax.
-    users(parent, args, { db }, info) {
-      if (args.query) {
-        return db.users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()))
-      } else {
-        return db.users
-      }
+    users(parent, args, { db, prisma }, info) {
+      return prisma.query.users(null, info)
+
+      // if (args.query) {
+      //   return db.users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()))
+      // } else {
+      //   return db.users
+      // }
     },
     posts(parent, args, { db }, info) {
       if (args.query) {
