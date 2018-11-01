@@ -9,9 +9,10 @@ const Subscription = {
             }
           }
         }
-      }, info)
-    }
-  },
+      }, info) // return
+    } // subscribe
+  }, // comment
+
   post: {
     subscribe(parent, args , { prisma }, info) {
       return prisma.subscription.post({
