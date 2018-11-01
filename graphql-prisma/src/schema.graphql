@@ -10,6 +10,7 @@ type Mutation {
   createUser(data: CreateUserInput!): AuthPayload!
   deleteUser(id: ID!): User!
   updateUser(id: ID!, data: UpdateUserInput): User!
+  loginUser(data: LoginUserInput!): AuthPayload!
 
   createPost(data: CreatePostInput!): Post!
   deletePost(id: ID!): Post!
@@ -39,6 +40,11 @@ input CreateUserInput {
 input UpdateUserInput {
   name: String
   email: String
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
 }
 
 input CreatePostInput {

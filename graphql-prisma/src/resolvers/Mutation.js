@@ -50,6 +50,26 @@ const Mutation = {
     }, info)
   }, // updateUser
 
+  async loginUser(parent, args, { prisma}, info) {
+    const emailExists = await prisma.exists.User({ email: args.data.email })
+    if (!emailExists) throw new Error('Unable to login.')
+
+    const user = await prisma.query.user({
+      where : {
+        email: args.data.email
+      }
+    })
+
+    const checkPassword = await bcrypt.compare(args.data.password, user.password)
+    if(!checkPassword) throw new Error('Unable to login.')
+
+    // Return user and token
+    return {
+      user,
+      token: jwt.sign({ userId: user.id }, 'jwt_secret_token')
+    }
+  },
+
   async createPost(parent, args, { prisma, pubsub }, info) {
     const userExists = await prisma.exists.User({ id: args.data.author })
 
