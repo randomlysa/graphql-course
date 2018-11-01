@@ -82,23 +82,6 @@ const Mutation = {
       throw new Error('Cannot create post: user doesn\'t exist')
     }
 
-    // Send a notification if publish was set to true.
-    if (args.data.published) {
-      pubsub.publish('post', {
-        post: {
-          mutation: 'CREATED',
-          data: {
-            ...args.data,
-            author: {
-              connect: {
-                id: userId
-              }
-            } // author
-          } // data
-        } // post: {}
-      }) //
-    }
-
     // Create and return the post.
     return prisma.mutation.createPost({
       data: {
@@ -112,28 +95,19 @@ const Mutation = {
     }, info)
   }, // createPost
 
-  async deletePost(parent, args, { prisma, pubsub }, info) {
+  async deletePost(parent, args, { prisma }, info) {
     const postExists = await prisma.exists.Post({ id: args.id})
 
     if (!postExists) {
       throw new Error ('Post ID not found ~')
     }
 
-    // if (post.published) {
-    //   pubsub.publish('post', {
-    //     post: {
-    //       mutation: 'DELETED',
-    //       data: post
-    //     }
-    //   })
-    // }
-
     return prisma.mutation.deletePost({
       where: { id: args.id }
     }, info)
   }, // deletePost
 
-  updatePost(parent, args, { prisma, pubsub }, info) {
+  updatePost(parent, args, { prisma }, info) {
     return prisma.mutation.updatePost({
       where: {
         id: args.id
@@ -142,7 +116,7 @@ const Mutation = {
     }, info)
   }, //updatePost
 
-  createComment(parent, args, { prisma, pubsub }, info) {
+  createComment(parent, args, { prisma }, info) {
     return prisma.mutation.createComment({
       data: {
         text: args.data.text,
@@ -160,7 +134,7 @@ const Mutation = {
     }, info)
   }, // createComment
 
-  deleteComment(parent, args, { prisma, pubsub }, info) {
+  deleteComment(parent, args, { prisma }, info) {
     return prisma.mutation.deleteComment({
       where: {
         id: args.id
@@ -168,7 +142,7 @@ const Mutation = {
     }, info)
   }, // deleteComment
 
-  updateComment(parent, args, { prisma, pubsub }, info) {
+  updateComment(parent, args, { prisma }, info) {
     return prisma.mutation.updateComment({
       where: {
         id: args.id
