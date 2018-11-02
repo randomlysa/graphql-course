@@ -47,6 +47,9 @@ const Query = {
 
       // Limit to author: id === logged in user.
       const opArgs = {
+        first: args.first,
+        skip: args.skip,
+        after: args.after,
         where: {
           author: {
             id: userId
@@ -69,7 +72,13 @@ const Query = {
     },
 
     comments(parent, args, { prisma }, info) {
-      return prisma.query.comments(null, info)
+      const opArgs = {
+        first: args.first,
+        skip: args.skip,
+        after: args.after,
+      } // opArgs
+
+      return prisma.query.comments(opArgs, info)
     }, // Query comments
 
     async post(parent, args, { prisma, request }, info) {
