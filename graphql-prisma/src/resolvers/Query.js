@@ -42,6 +42,32 @@ const Query = {
       return prisma.query.posts(opArgs, info)
     }, // Query posts
 
+    myPosts(parent, args, { prisma, request }, info) {
+      const userId = getUserId(request)
+
+      // Limit to author: id === logged in user.
+      const opArgs = {
+        where: {
+          author: {
+            id: userId
+          }
+        }
+      }; // opArgs
+
+      if (args.query) {
+        // Don't override the initial opArgs.
+        opArgs.where.OR = {
+          OR : [{
+            title_contains: args.query
+          }, {
+            body_contains: args.query
+          }]
+        }
+      } // if (args.query)
+
+      return prisma.query.posts(opArgs, info)
+    },
+
     comments(parent, args, { prisma }, info) {
       return prisma.query.comments(null, info)
     }, // Query comments
