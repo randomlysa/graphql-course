@@ -60,7 +60,17 @@ const Query = {
       if(posts.length === 0) throw new Error('Post not found')
 
       return posts[0]
-    }
+    }, // Query post
+    me(parent, args, { prisma, request }, info) {
+      const userId = getUserId(request)
+      if (!userId) throw new Error('User not found')
+
+      return prisma.query.user({
+        where: {
+          id: userId
+        }
+      });
+    } // Query me
 }
 
 export { Query as default }
