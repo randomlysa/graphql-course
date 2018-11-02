@@ -20,10 +20,17 @@ const Query = {
     }, // Query users
 
     posts(parent, args, { prisma }, info) {
-      const opArgs = {}
+      // By default, show only published posts.
+      const opArgs = {
+        where: {
+          published: true
+        }
+      } // opArgs
+
 
       if (args.query) {
-        opArgs.where = {
+        // Don't override the initial opArgs.
+        opArgs.where.OR = {
           OR : [{
             title_contains: args.query
           }, {
