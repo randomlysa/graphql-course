@@ -27,7 +27,6 @@ const Query = {
         }
       } // opArgs
 
-
       if (args.query) {
         // Don't override the initial opArgs.
         opArgs.where.OR = {
