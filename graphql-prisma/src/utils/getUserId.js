@@ -6,8 +6,6 @@ const getUserId = (request, requireAuth = true) => {
     request.request.headers.authorization :
     request.connection.context.Authorization
 
-
-
   if(header) {
     const token = header.replace('Bearer ', '');
     const decoded = jwt.verify(token, 'jwt_secret_token')
@@ -16,9 +14,7 @@ const getUserId = (request, requireAuth = true) => {
 
   // If auth is not required, don't throw an error.
   if (requireAuth) throw new Error('Authentication required')
-
   return null
-
 }
 
 export { getUserId as default }
