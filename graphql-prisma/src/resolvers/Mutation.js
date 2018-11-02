@@ -126,6 +126,22 @@ const Mutation = {
 
     if (!postExists) throw new Error ('Unable to update post.')
 
+    const postIsPublished = await prisma.exists.Post({
+      id: args.id,
+      published: true
+    })
+
+    // Delete all comments for post if unpublishing post.
+    if(postIsPublished && args.data.published === false) {
+      await prisma.mutation.deleteManyComments({
+        where: {
+          post: {
+            id: args.id
+          }
+        }
+      }) // await prisma mutation
+    } // if post is being unpublished
+
     return prisma.mutation.updatePost({
       where: {
         id: args.id
