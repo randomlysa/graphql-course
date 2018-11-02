@@ -137,6 +137,14 @@ const Mutation = {
   async createComment(parent, args, { prisma, request }, info) {
     const userId = getUserId(request)
 
+    const post = await prisma.query.posts({
+      where: {
+        id: args.data.post
+      }
+    })
+
+    if (!post.published) throw new Error('Could not create comment.')
+
     return prisma.mutation.createComment({
       data: {
         text: args.data.text,
