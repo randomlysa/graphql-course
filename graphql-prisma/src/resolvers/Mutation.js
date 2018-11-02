@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 import getUserId from '../utils/getUserId'
+import generateToken from '../utils/generateToken'
 
 const Mutation = {
   // ES6 method, async goes in front.
@@ -28,7 +28,7 @@ const Mutation = {
     // Return user and token
     return {
       user,
-      token: jwt.sign({ userId: user.id }, 'jwt_secret_token')
+      token: generateToken(user.id)
     }
   }, // createUser
 
@@ -69,7 +69,7 @@ const Mutation = {
     // Return user and token
     return {
       user,
-      token: jwt.sign({ userId: user.id }, 'jwt_secret_token')
+      token: generateToken(user.id)
     }
   },
 
