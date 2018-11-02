@@ -18,6 +18,7 @@ const Query = {
       return prisma.query.users(opArgs, info)
 
     }, // Query users
+
     posts(parent, args, { prisma }, info) {
       const opArgs = {}
 
@@ -33,6 +34,7 @@ const Query = {
 
       return prisma.query.posts(opArgs, info)
     }, // Query posts
+
     comments(parent, args, { prisma }, info) {
       return prisma.query.comments(null, info)
     }, // Query comments
@@ -61,6 +63,7 @@ const Query = {
 
       return posts[0]
     }, // Query post
+
     me(parent, args, { prisma, request }, info) {
       const userId = getUserId(request)
       if (!userId) throw new Error('User not found')
