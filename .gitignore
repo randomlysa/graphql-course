@@ -61,4 +61,5 @@ typings/
 .next
 
 */prisma-review-website/*
-/apollo-client/.cache/*
+*/.cache/*
+*/dist/*
