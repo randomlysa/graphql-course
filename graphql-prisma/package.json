@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "env-cmd ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
-    "test": "env-cmd ./config/test.env jest --watch",
+    "test": "env-cmd ./config/test.env jest --watch --verbose false",
     "get-schema": "graphql get-schema -p prisma"
   },
   "jest": {
@@ -17,12 +17,15 @@
   "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "apollo-boost": "^0.1.20",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "bcryptjs": "^2.4.3",
+    "cross-fetch": "^2.2.3",
     "env-cmd": "^8.0.2",
+    "graphql": "^14.0.2",
     "graphql-cli": "^2.16.7",
     "prisma-binding": "^2.1.1"
   },
