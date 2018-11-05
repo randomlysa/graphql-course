@@ -7,6 +7,10 @@ const client = new ApolloBoost({
   uri: 'http://localhost:4001'
 })
 
+beforeEach(async() => {
+  await prisma.mutation.deleteManyUsers()
+});
+
 test('Should create a new user', async () => {
   const createUser = gql`
     mutation {
