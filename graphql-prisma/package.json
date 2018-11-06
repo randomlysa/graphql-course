@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "env-cmd ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
-    "test": "env-cmd ./config/test.env jest --watch --verbose false",
+    "test": "env-cmd ./config/test.env jest --watch --verbose false --runInBand",
     "get-schema": "graphql get-schema -p prisma"
   },
   "jest": {
