@@ -73,7 +73,7 @@ test('Should create a new user', async () => {
   expect(exists).toBe(true);
 }) // should create a new user
 
-test('Should expose public author profiles', async () => {
+test('Should expose public author profiles (no email addresses)', async () => {
   const getUsers = gql`
     query {
       users {
@@ -88,9 +88,9 @@ test('Should expose public author profiles', async () => {
   expect(response.data.users.length).toBe(1)
   expect(response.data.users[0].email).toBe(null)
   expect(response.data.users[0].name).toBe('User1')
-})
+}) // Should expose public author profiles (no email addresses)
 
-test('Should expose published posts', async () => {
+test('Should expose only published posts', async () => {
   const getPosts = gql`
     query {
       posts {
@@ -103,7 +103,7 @@ test('Should expose published posts', async () => {
 
   expect(response.data.posts.length).toBe(1)
   expect(response.data.posts[0].published).toBe(true)
-})
+}) // Should expose only published posts
 
 test('Should not login with bad credentials', async () => {
   const login = gql`
