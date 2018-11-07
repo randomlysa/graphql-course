@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import prisma from '../../src/prisma';
 
+jest.setTimeout(10000);
+
 const userOne = {
   input: {
     name: 'User1',
