@@ -36,7 +36,7 @@ test('Should get myPosts (published and not)', async () => {
   const { data } = await client.query({ query: myPosts })
 
   expect(data.myPosts.length).toBe(2)
-}) // Get myPosts (published and not)
+}) // Should get myPosts (published and not)
 
 test('Should be able to update own post', async () => {
   const client = getClient(userOne.jwt)
@@ -64,6 +64,7 @@ test('Should be able to update own post', async () => {
 
   expect(data.updatePost.published).toBe(false)
   expect(exists).toBe(true)
+}) // Should be able to update own post
 
 test('Should be able to create a post', async () => {
   const client = getClient(userOne.jwt)
