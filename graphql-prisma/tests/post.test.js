@@ -1,9 +1,11 @@
 import 'cross-fetch/polyfill'
-import { gql } from 'apollo-boost'
 import prisma from '../src/prisma'
 import seedDatabase, { userOne, postOne, postTwo } from './utils/seedDatabase'
 import getClient from './utils/getClient'
-import { getPosts, myPosts, updatePost, createPost, deletePost } from './utils/operations'
+import {
+  getPosts, myPosts, updatePost, createPost, deletePost, subscribeToPosts
+} from './utils/operations'
+
 
 const client = getClient()
 beforeEach(seedDatabase);
@@ -83,3 +85,26 @@ test('Should be able to delete a post', async () => {
 
   expect(exists).toBe(false)
 }) // Should be able to delete a post
+
+test('Should subscribe to changes to posts', async (done) => {
+  client.subscribe({ query: subscribeToPosts }).subscribe({
+    next(response) {
+      expect(response.data.post.mutation).toBe('CREATED')
+      expect(response.data.post.node.title).toBe('A new post appears ~')
+      done()
+    }
+  })
+
+  await prisma.mutation.createPost({
+    data: {
+      title: 'A new post appears ~',
+      body: '',
+      published: true,
+      author: {
+        connect: {
+          id: userOne.user.id
+        }
+      }
+    }
+  })
+}) // Should subscribe to changes to posts
