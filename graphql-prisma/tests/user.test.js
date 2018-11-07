@@ -3,31 +3,25 @@ import { gql } from 'apollo-boost'
 import prisma from '../src/prisma'
 import seedDatabase, { userOne } from './utils/seedDatabase'
 import getClient from './utils/getClient'
+import { createUser, getUsers, login, getProfile } from './utils/operations'
 
+// Genertic getClient without auth
 const client = getClient()
-beforeEach(seedDatabase);
+// Set up database.
+beforeEach(seedDatabase)
 
 test('Should create a new user', async () => {
-  const createUser = gql`
-    mutation {
-      createUser(
-        data: {
-          name: "Alex",
-          email: "alex@example.com",
-          password: "myPass123"
-        }
-      ){
-        token
-        user {
-          id
-          email
-        }
-      }
+  const variables = {
+    data: {
+      name: 'bob',
+      email: 'bob@example.com',
+      password: 'apasswd44'
     }
-  `
+  }
 
   const response = await client.mutate({
-    mutation: createUser
+    mutation: createUser,
+    variables
   })
 
   const exists = await prisma.exists.User({ id: response.data.createUser.user.id })
@@ -36,15 +30,6 @@ test('Should create a new user', async () => {
 }) // should create a new user
 
 test('Should expose public author profiles (no email addresses)', async () => {
-  const getUsers = gql`
-    query {
-      users {
-        id
-        name
-        email
-      }
-    }
-  `
   const response = await client.query({ query: getUsers })
 
   expect(response.data.users.length).toBe(1)
@@ -53,55 +38,41 @@ test('Should expose public author profiles (no email addresses)', async () => {
 }) // Should expose public author profiles (no email addresses)
 
 test('Should not login with bad credentials', async () => {
-  const login = gql`
-    mutation {
-      loginUser(
-        data: {
-          email: "user1@example.com",
-          password: "zxc098!@#"
-        }
-      ) {
-        name
-      }
+  const variables = {
+    data: {
+      name: 'bob',
+      password: 'wrongpwd'
     }
-  `
+  }
 
   await expect(
-    client.mutate({ mutation: login})
+    client.mutate({
+      mutation: login,
+      variables
+    })
   ).rejects.toThrow()
 }) // Should not login with bad credentials
 
 test('Should not create user with password < 8 characters', async () => {
-  const createUser = gql`
-    mutation {
-      createUser(
-        data: {
-          name: "test",
-          email: "test@test.com",
-          password: "short"
-        }
-      ) {
-        token
-      }
+  const variables = {
+    data: {
+      name: 'testuser',
+      email: 'testuser@test.com',
+      password: 'short'
     }
-  `;
+  }
 
   await expect(
-    client.mutate({ mutation: createUser })
+    client.mutate({
+      mutation: createUser,
+      variables
+    })
   ).rejects.toThrow()
 }) // Should not create user with password < 8 characters
 
 test('Should fetch user profile if authenticated', async () => {
   const client = getClient(userOne.jwt)
-  const getProfile = gql`
-    query {
-      me {
-        id
-        name
-        email
-      }
-    }
-  `
+
   const { data } = await client.query({ query: getProfile })
 
   expect(data.me.id).toBe(userOne.user.id)
