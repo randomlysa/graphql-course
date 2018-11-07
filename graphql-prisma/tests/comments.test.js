@@ -1,8 +1,9 @@
 import 'cross-fetch/polyfill'
 import prisma from '../src/prisma'
-import seedDatabase, { userTwo, commentOne, commentTwo } from './utils/seedDatabase'
+import seedDatabase, { userTwo, commentOne, commentTwo, postOne, userOne } from './utils/seedDatabase'
 import getClient from './utils/getClient'
-import { deleteComment } from './utils/operations'
+import { deleteComment, subscribeToComments } from './utils/operations'
+
 
 // Genertic getClient without auth
 const client = getClient()
@@ -43,3 +44,18 @@ test('Should not delete comment of other user', async () => {
     })
   ).rejects.toThrow()
 })
+
+test('Should subscribe to comments for a post', async (done) => {
+  const variables = {
+    postId: postOne.post.id
+  }
+
+  client.subscribe({ query: subscribeToComments, variables }).subscribe({
+    next(response) {
+      expect(response.data.comment.mutation).toBe('DELETED')
+      done()
+    }
+  })
+
+  await prisma.mutation.deleteComment({ where: {id: commentOne.comment.id }})
+}) // Should subscribe to comments for a post
